@@ -16,30 +16,67 @@ namespace Backend.Controllers
             _context = context;
         }
 
-        [HttpGet]
-        public async Task<IEnumerable<TodoTask>> GetTasks() => await _context.Tasks.ToListAsync();
-
+        // Post new task to server
         [HttpPost]
         public async Task<ActionResult<TodoTask>> CreateTask(TodoTask task)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             _context.Tasks.Add(task);
             await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetTasks), new { id = task.Id }, task);
+            return CreatedAtAction(nameof(GetTask), new { id = task.Id }, task);
         }
 
+        // Get all tasks
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<TodoTask>>> GetTasks() => Ok(await _context.Tasks.ToListAsync());
+
+        // Get on speicfic task based on the ID
+        [HttpGet("{id}")]
+        public async Task<ActionResult<TodoTask>> GetTask(int id)
+        {
+            var task = await _context.Tasks.FindAsync(id);
+            if (task == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(task);
+        }
+
+        // Put, update existing task
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateTask(int id, TodoTask updated)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var task = await _context.Tasks.FindAsync(id);
             if (task == null) return NotFound();
 
+            if (task.Status == TaskCompletion.DONE && updated.Status != TaskCompletion.DONE)
+            {
+                return BadRequest("Cannot transition task status backward from DONE.");
+            }
+
+            if (task.Status == TaskCompletion.INPROGRESS && updated.Status == TaskCompletion.TODO)
+            {
+                return BadRequest("Cannot transition task status backward.");
+            }
+
             task.Title = updated.Title;
-            task.IsComplete = updated.IsComplete;
+            task.Status = updated.Status;
 
             await _context.SaveChangesAsync();
+
             return NoContent();
         }
 
+        // Delete existing task
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTask(int id)
         {

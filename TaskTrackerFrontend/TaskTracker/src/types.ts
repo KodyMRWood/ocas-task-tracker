@@ -1,5 +1,7 @@
 export interface Task {
   id: number;
   title: string;
-  isComplete: boolean;
+  description: string;
+  dueDate: Date;
+  status: boolean;
 }
