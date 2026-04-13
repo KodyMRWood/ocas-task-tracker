@@ -1,5 +1,4 @@
-import type { Task } from "../types";
-
+import type { Task, TaskStatus } from "../types";
 
 const API = "/api/tasks";
 
@@ -18,11 +17,11 @@ export async function getTask(id: number): Promise<Task> {
 }
 
 
-export async function createTask(title: string, description: string, dueDate?: Date): Promise<Task> {
+export async function createTask(title: string, description: string, dueDate?: Date, status: TaskStatus = 0): Promise<Task> {
   const res = await fetch(API, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ title, description, dueDate, status: 0 })
+    body: JSON.stringify({ title, description, dueDate, status })
   });
 
   if (!res.ok) {

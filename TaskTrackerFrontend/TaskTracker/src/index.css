@@ -1,3 +1,6 @@
+@import "tailwindcss/theme";
+@import "tailwindcss/utilities";
+
 :root {
   --text: #6b6375;
   --text-h: #08060d;
@@ -108,4 +111,28 @@ code {
   line-height: 135%;
   padding: 4px 8px;
   background: var(--code-bg);
+}
+
+.input-field{
+  @apply w-full px-3 py-2 
+            bg-(--accent-bg)
+            border-slate-300 
+            rounded-md 
+            text-sm shadow-sm placeholder-slate-400
+            focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500
+          disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none
+}
+
+select.input-field {
+  background: var(--accent-bg);
+  color: #f8fafc;
+}
+
+select.input-field option {
+  background: var(--accent-bg);
+  color: #f8fafc;
+}
+    
+select.input-field:hover {
+  background: var(--accent-bg);
 }

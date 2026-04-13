@@ -58,14 +58,22 @@ namespace Backend.Controllers
             var task = await _context.Tasks.FindAsync(id);
             if (task == null) return NotFound();
 
-            if (task.Status == TaskCompletion.DONE && updated.Status != TaskCompletion.DONE)
-            {
-                return BadRequest("Cannot transition task status backward from DONE.");
-            }
+            // If we do not want the task to be able to go back to open
+            // However in an agile workplace, this could cause problems
+            // if (task.Status == TaskCompletion.DONE && updated.Status != TaskCompletion.DONE)
+            // {
+            //     return BadRequest("Cannot transition task status backward from DONE.");
+            // }
 
-            if (task.Status == TaskCompletion.INPROGRESS && updated.Status == TaskCompletion.TODO)
+            // if (task.Status == TaskCompletion.INPROGRESS && updated.Status == TaskCompletion.TODO)
+            // {
+            //     return BadRequest("Cannot transition task status backward.");
+            // }
+
+            //Business rule. the task can not be completed if the title is empty or white space
+            if (updated.Status == TaskCompletion.DONE && string.IsNullOrWhiteSpace(updated.Title))
             {
-                return BadRequest("Cannot transition task status backward.");
+                return BadRequest("Cannot mark a task as DONE when the title is empty.");
             }
 
             task.Title = updated.Title;
